@@ -1,0 +1,84 @@
+.tree-hierarchy {
+  width: 980px;
+  margin: 5px auto;
+  border: 1px solid black;
+  
+  & > .tree-header {
+    border-bottom: 1px solid black;
+    padding: 5px;
+    text-align: left;
+    
+    button {
+      display: inline-block;
+      margin-left: 5px;
+    }
+    
+    .filter-wrapper {
+      float: right;
+      
+      label {
+        display: inline-block;
+        font-size: 14px;
+      }
+      
+      input[type="text"] {
+        margin: 0;
+        height: 16px;
+      }
+    }
+  }
+  
+  & > ul.tree-body {
+    list-style: none;
+    margin: 0;
+    padding: 5px;
+    font-size: 14px;
+    line-height: 18px;
+    font-family: "Helvetica Neue", Helvetica, Arial, Sans-Serif;
+    height: 450px;
+    overflow-y: auto;
+    overflow-x: visible;
+    
+    a:hover {
+      text-decoration: none;
+    }
+    
+    .expand-collapse-link-wrapper {
+      display: inline-block;
+      height: 16px;
+      width: 18px;
+    }
+    
+    li {
+      display: block;
+      margin: 0;
+      padding: 0;
+      line-height: 24px;
+      
+      form {
+        display: inline-block;
+        margin: 0;
+      }
+      
+      input[type="text"] {
+        height: 18px;
+        margin: 0;
+      }
+      
+      input[type="checkbox"] {
+        display: block;
+      }
+      
+      span ins {
+        background-color: #eff5a1;
+        text-decoration: none;
+      }
+      
+      ul {
+        list-style: none;
+        margin: 0;
+        padding-left: 22px;
+      }
+    }
+  }
+}

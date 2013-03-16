@@ -1,0 +1,70 @@
+.tree-hierarchy {
+  width: 980px;
+  margin: 5px auto;
+  border: 1px solid black;
+}
+.tree-hierarchy  > .tree-header {
+  border-bottom: 1px solid black;
+  padding: 5px;
+  text-align: left;
+}
+.tree-hierarchy  > .tree-header button {
+  display: inline-block;
+  margin-left: 5px;
+}
+.tree-hierarchy  > .tree-header .filter-wrapper {
+  float: right;
+}
+.tree-hierarchy  > .tree-header .filter-wrapper label {
+  display: inline-block;
+  font-size: 14px;
+}
+.tree-hierarchy  > .tree-header .filter-wrapper input[type="text"] {
+  margin: 0;
+  height: 16px;
+}
+.tree-hierarchy  > ul.tree-body {
+  list-style: none;
+  margin: 0;
+  padding: 5px;
+  font-size: 14px;
+  line-height: 18px;
+  font-family: "Helvetica Neue", Helvetica, Arial, Sans-Serif;
+  height: 450px;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+.tree-hierarchy  > ul.tree-body a:hover {
+  text-decoration: none;
+}
+.tree-hierarchy  > ul.tree-body .expand-collapse-link-wrapper {
+  display: inline-block;
+  height: 16px;
+  width: 18px;
+}
+.tree-hierarchy  > ul.tree-body li {
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 24px;
+}
+.tree-hierarchy  > ul.tree-body li form {
+  display: inline-block;
+  margin: 0;
+}
+.tree-hierarchy  > ul.tree-body li input[type="text"] {
+  height: 18px;
+  margin: 0;
+}
+.tree-hierarchy  > ul.tree-body li input[type="checkbox"] {
+  display: block;
+}
+.tree-hierarchy  > ul.tree-body li span ins {
+  background-color: #eff5a1;
+  text-decoration: none;
+}
+.tree-hierarchy  > ul.tree-body li ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 22px;
+}
