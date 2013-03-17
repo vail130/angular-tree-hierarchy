@@ -15,22 +15,25 @@ var TreeCtrl = function($scope) {
     };
   };
   
-  var createTreeRecursive = function(seed, parent) {
+  var createSampleDataTree = function(breadth, depth, parent) {
     if(!parent) {
-      parent = {code: ""};
+      var tree = [];
+      for(var i = 0; i < breadth; i++) {
+        var treeNode = createNode(i+1, "");
+        createSampleDataTree(breadth, depth-1, treeNode);
+        tree.push(treeNode);
+      }
+      return tree;
+    } else if(depth) {
+      for(var i = 0; i < breadth; i++) {
+        var child = createNode(i+1, parent.code);
+        createSampleDataTree(breadth, depth-1, child);
+        parent.children.push(child);
+      }
     }
-    var tree = []
-      , num = Math.floor(Math.random()*3);
-    
-    for(var i = 1; seed > 1 && i < 5; i++) {
-      var treeNode = createNode(i, parent.code);
-      treeNode.children = createTreeRecursive(seed/10, treeNode);
-      tree.push(treeNode);
-    }
-    return tree;
   };
   
-  $scope.tree = createTreeRecursive(100);
+  $scope.tree = createSampleDataTree(3, 6);
 }
 
 angular.module('myApp.controllers', []).
