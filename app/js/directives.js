@@ -3,7 +3,7 @@
 /* Directives */
 
 angular.module('tree-hierarchy', [])
-  .directive('treeHierarchy', ["$http", function($http) {
+  .directive('treeHierarchy', function() {
     return {
       template: [
         '<div class="tree-hierarchy">',
@@ -16,30 +16,37 @@ angular.module('tree-hierarchy', [])
             '</div>',
           '</div>',
           '<ul class="tree-body" ng-model="tree">',
-            '<li ng-repeat="data in tree" tree-hierarchy-rec="data" allow-leaf-selection="allowLeafSelection"></li>',
+            '<li ng-repeat="data in tree" tree-hierarchy-rec="data" selection-type="selectionType" pre-selection="preSelection"></li>',
           '</ul>',
         '</div>'
       ].join('\n'),
       replace: true,
       scope: {
-        tree: '=treeHierarchy',
-        allowLeafSelection: '=allowLeafSelection'
+        selectionType: '=selectionType',
+        preSelection: '=preSelection'
       },
       link: function($scope, elem, attrs) {
         $scope.load = function() {
-          if(!attrs["treeHierarchy"]) {
-            $scope.getTreeDataEndpoint = attrs["getTreeDataEndpoint"];
-            $scope.saveNodeEndpoint = attrs["saveNodeEndpoint"];
-            $scope.tree = {};
-            $scope.getTreeData();
+          if(!($scope.selectionType instanceof Array) && ['leaf', 'all'].indexOf($scope.selectionType) === -1) {
+            $scope.selectionType = null;
           }
+          if(!($scope.preSelection instanceof Array)) {
+            $scope.preSelection = [];
+          }
+          $scope.getTreeData();
         };
         
         $scope.getTreeData = function() {
-          $http.get($scope.getTreeDataEndpoint).success(function(data) {
-            $scope.tree = JSON.parse(data);
-          });
+          $scope.$emit('loadData');
         };
+        
+        $scope.$on('dataLoaded', function(event, data) {
+          $scope.tree = data;
+        });
+        
+        $scope.$on('dataLoadError', function(event, data) {
+          // Handle error
+        });
         
         $scope.expandAll = function() {
           $scope.$broadcast('expandAll');
@@ -52,28 +59,24 @@ angular.module('tree-hierarchy', [])
         $scope.filterNodes = function() {
           $scope.$broadcast('filter', $scope.filter);
         };
-  
-        $scope.$on("saveNode", function(event, nodeData) {
-          $http.post($scope.saveNodeEndpoint, nodeData).success(function(data) {
-            // Handle response...
-          });
-        });
         
         $scope.load();
       }
     };
-  }])
+  })
   .directive('treeHierarchyRec', ['$compile', function($compile) {
     return {
       template: [
         '<span ng-hide="hidden">',
+          '<span class="checkbox-wrapper">',
+            '<input type="checkbox" ng-show="getCheckboxVisibilityStatus(nodeData)" ng-model="nodeData.isSelected" ng-click="saveNode()" />',
+          '</span>',
           '<span class="expand-collapse-link-wrapper">',
             '<a href="#" ng-click="toggleNodes()" ng-show="nodeData.children.length">',
               '<i ng-class="getToggleIconClass()"></i>',
             '</a>',
-            '<input type="checkbox" ng-model="nodeData.isSelected" ng-show="allowLeafSelection && !nodeData.children.length" ng-click="saveNode()" />',
           '</span>',
-          '<span ng-click="toggleNodes()" ng-hide="editing" ng-bind-html="highlightedLabel"></span>',
+          '<span ng-click="toggleNodes()" ng-hide="editing" ng-class="getCollapsibleClass(nodeData)" ng-bind-html="highlightedLabel"></span>',
           '<form ng-submit="saveName()" ng-hide="!editing">',
             '<input type="text" ng-model="nodeData.name" />',
           '</form>',
@@ -88,7 +91,8 @@ angular.module('tree-hierarchy', [])
       replace: false,
       scope: {
         nodeData: '=treeHierarchyRec',
-        allowLeafSelection: '=allowLeafSelection'
+        selectionType: '=selectionType',
+        preSelection: '=preSelection'
       },
       link: function($scope, elem, attrs) {
         $scope.$on('collapseAll', function() {
@@ -161,9 +165,29 @@ angular.module('tree-hierarchy', [])
           $scope.ulReplaced = false;
           $scope.highlightedLabel = $scope.nodeData.code + " - " + $scope.nodeData.name;
           
+          if($scope.preSelection.indexOf($scope.nodeData.id) > -1) {
+            $scope.nodeData.isSelected = true;
+          }
+          
           if($scope.nodeData && $scope.nodeData.children && $scope.nodeData.children.length) {
             $scope.loadChildNodes();
           }
+        };
+        
+        $scope.getCheckboxVisibilityStatus = function(nodeData) {
+          if($scope.selectionType === 'leaf' && !nodeData.children.length) {
+            return true;
+          } else if($scope.selectionType === 'all') {
+            return true;
+          } else if($scope.selectionType instanceof Array && $scope.selectionType.indexOf(nodeData.id) > -1) {
+            return true;
+          } else {
+            return false;
+          }
+        };
+        
+        $scope.getCollapsibleClass = function(nodeData) {
+          return nodeData.children.length ? "collapsible" : "";
         };
         
         $scope.getToggleIconClass = function() {
@@ -180,7 +204,7 @@ angular.module('tree-hierarchy', [])
           var ul = angular.element(elem).find('ul')
             , template = [
               '<ul ng-model="nodeData.children" ng-show="shown">',
-                '<li ng-repeat="data in nodeData.children" tree-hierarchy-rec="data" allow-leaf-selection="allowLeafSelection"></li>',
+                '<li ng-repeat="data in nodeData.children" tree-hierarchy-rec="data" selection-type="selectionType" pre-selection="preSelection"></li>',
               '</ul>'
             ].join('\n')
             , newElement = angular.element(template);
@@ -229,7 +253,6 @@ angular.module('tree-hierarchy', [])
         };
         
         $scope.saveName = function(name) {
-          console.log(name, $scope.nodeData.name);
           $scope.editing = false;
           $scope.highlightedLabel = $scope.nodeData.code + " - " + $scope.nodeData.name;
           $scope.previousName = null;
