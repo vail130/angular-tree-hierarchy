@@ -46,7 +46,13 @@
     .expand-collapse-link-wrapper {
       display: inline-block;
       height: 16px;
-      width: 18px;
+      min-width: 16px;
+    }
+    
+    .checkbox-wrapper {
+      display: inline-block;
+      height: 16px;
+      min-width: 14px;
     }
     
     li {
@@ -66,18 +72,29 @@
       }
       
       input[type="checkbox"] {
-        display: block;
+        display: inline-block;
+        margin-top: -3px;
       }
       
-      span ins {
-        background-color: #eff5a1;
-        text-decoration: none;
+      span {
+        &.collapsible {
+          cursor: pointer;
+          
+          &:hover {
+            background-color: #eee;
+          }
+        }
+        
+        ins {
+          background-color: #eff5a1;
+          text-decoration: none;
+        }
       }
       
       ul {
         list-style: none;
         margin: 0;
-        padding-left: 22px;
+        padding-left: 37px;
       }
     }
   }
